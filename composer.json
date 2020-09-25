@@ -1,0 +1,32 @@
+{
+    "name": "lsbproject/request-doc-bundle",
+    "description": "OpenApi 3.0 auto documentation for request-bundle",
+    "type": "symfony-bundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "victor.fedorenko",
+            "email": "fedorenko22116@gmail.com"
+        }
+    ],
+    "minimum-stability": "beta",
+    "require": {
+        "php": "^7.4",
+        "lsbproject/request-bundle": "^3.0",
+        "nelmio/api-doc-bundle": "^v4"
+    },
+    "require-dev": {
+        "lsbproject/php-clean-code-rules": "^1.0",
+        "symfony/validator": "^5.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "LSBProject\\RequestDocBundle\\": "src"
+        }
+    },
+    "scripts": {
+        "phpstan": "phpstan analyse -c ./phpstan.neon",
+        "phpcs": "./vendor/bin/phpcs",
+        "phpcbf": "./vendor/bin/phpcbf"
+    }
+}
