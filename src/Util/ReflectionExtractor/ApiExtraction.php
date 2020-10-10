@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace LSBProject\RequestDocBundle\Util\ReflectionExtractor;
 
-use LSBProject\RequestBundle\Util\ReflectionExtractor\DTO\Extraction;
 use OpenApi\Annotations\Schema;
-use Symfony\Component\Validator\Constraint;
 
-class ApiExtraction
+final class ApiExtraction
 {
     /**
-     * @var ApiExtraction[]
+     * @var ApiPropertyExtraction[]
      */
-    private array $extractions = [];
+    private array $extractions;
     private ?Schema $schema;
 
     /**
@@ -26,7 +24,7 @@ class ApiExtraction
     }
 
     /**
-     * @return ApiExtraction[]
+     * @return ApiPropertyExtraction[]
      */
     public function getExtractions(): array
     {
@@ -34,7 +32,7 @@ class ApiExtraction
     }
 
     /**
-     * @param ApiExtraction[] $extractions
+     * @param ApiPropertyExtraction[] $extractions
      */
     public function setExtractions(array $extractions): void
     {

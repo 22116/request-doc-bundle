@@ -1,0 +1,38 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <service
+            id="lsbproject.request_doc.reflection_extractor"
+            class="LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDecorator"
+            public="false"
+        >
+            <argument type="service" id="LSBProject\RequestBundle\Util\ReflectionExtractor\ReflectionExtractorInterface" />
+            <argument type="service" id="annotations.cached_reader" />
+        </service>
+        <service
+                id="lsbproject.request_doc.request_describer"
+                class="LSBProject\RequestDocBundle\Nelmio\Describer\PropertyRequestDescriber"
+                public="true"
+        >
+            <tag name="nelmio_api_doc.model_describer" priority="100" />
+            <argument type="service" id="lsbproject.request_doc.reflection_extractor" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface" />
+            <argument type="tagged_iterator" tag="nelmio_api_doc.object_model.property_describer" />
+        </service>
+        <service
+                id="lsbproject.request_doc.route_describer"
+                class="LSBProject\RequestDocBundle\Nelmio\Describer\RouteRequestDescriber"
+                public="true"
+        >
+            <tag name="nelmio_api_doc.route_describer" priority="100" />
+            <argument type="service" id="lsbproject.request_doc.reflection_extractor" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface" />
+            <argument type="tagged_iterator" tag="nelmio_api_doc.object_model.property_describer" />
+        </service>
+    </services>
+</container>

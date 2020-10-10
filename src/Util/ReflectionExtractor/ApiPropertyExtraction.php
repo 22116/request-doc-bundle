@@ -6,46 +6,16 @@ namespace LSBProject\RequestDocBundle\Util\ReflectionExtractor;
 
 use LSBProject\RequestBundle\Util\ReflectionExtractor\DTO\Extraction;
 use OpenApi\Annotations\Schema;
-use Symfony\Component\Validator\Constraint;
 
-class ApiPropertyExtraction
+final class ApiPropertyExtraction
 {
-    /**
-     * @var Constraint[]
-     */
-    private array $validatorConstraints = [];
     private Extraction $extraction;
     private ?Schema $schema;
 
-    /**
-     * @param Constraint[] $validatorConstraints
-     */
-    public function __construct(Extraction $extraction, ?Schema $schema = null, array $validatorConstraints = [])
+    public function __construct(Extraction $extraction, ?Schema $schema = null)
     {
         $this->extraction = $extraction;
         $this->schema = $schema;
-        $this->validatorConstraints = $validatorConstraints;
-    }
-
-    /**
-     * @return Constraint[]
-     */
-    public function getValidatorConstraints(): array
-    {
-        return $this->validatorConstraints;
-    }
-
-    /**
-     * @param Constraint[] $validatorConstraints
-     */
-    public function setValidatorConstraints(array $validatorConstraints): void
-    {
-        $this->validatorConstraints = $validatorConstraints;
-    }
-
-    public function addValidatorConstraints(Constraint $constraint): void
-    {
-        $this->validatorConstraints[] = $constraint;
     }
 
     public function getExtraction(): Extraction
