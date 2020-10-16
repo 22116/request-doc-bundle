@@ -27,7 +27,6 @@ return [
 ```
 
 ## Examples
-### In class usage
 
 ```php
 <?php declare(strict_types=1);
@@ -104,10 +103,4 @@ class TestRequest extends AbstractRequest
         return $this->barBaz;
     }
 }
-```
-
-### Parameter usage
-
-```php
-
 ```
