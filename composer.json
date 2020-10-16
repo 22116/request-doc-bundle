@@ -3,7 +3,6 @@
     "description": "OpenApi 3.0 auto documentation for request-bundle",
     "type": "symfony-bundle",
     "license": "MIT",
-    "version": "v1.0.0",
     "authors": [
         {
             "name": "victor.fedorenko",
