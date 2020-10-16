@@ -23,6 +23,7 @@ use ReflectionClass;
 use ReflectionMethod;
 use ReflectionNamedType;
 use ReflectionParameter;
+use ReflectionProperty;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Route;
 
@@ -92,15 +93,30 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
                     $sources = $requestStorage->getSources();
 
                     if (in_array(RequestStorage::QUERY, $sources)) {
-                        $this->describeOperationParameter($operation, $property, RequestStorage::QUERY);
+                        $this->describeOperationParameter(
+                            $operation,
+                            $property,
+                            $classReflector,
+                            RequestStorage::QUERY,
+                        );
                     }
 
                     if (in_array(RequestStorage::PATH, $sources)) {
-                        $this->describeOperationParameter($operation, $property, RequestStorage::PATH);
+                        $this->describeOperationParameter(
+                            $operation,
+                            $property,
+                            $classReflector,
+                            RequestStorage::PATH,
+                        );
                     }
 
                     if (in_array(RequestStorage::HEAD, $sources)) {
-                        $this->describeOperationParameter($operation, $property, RequestStorage::HEAD);
+                        $this->describeOperationParameter(
+                            $operation,
+                            $property,
+                            $classReflector,
+                            RequestStorage::HEAD,
+                        );
                     }
 
                     if (
@@ -110,7 +126,10 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
                         $propertyName = $this->getNamingConversion($requestStorage->getConverter())->normalize(
                             $property->getExtraction()->getName(),
                         );
-                        $bodyProperties[$propertyName] = $this->createPropertySchema($property);
+                        $bodyProperties[$propertyName] = $this->createPropertySchema(
+                            $property,
+                            $classReflector->getProperty($property->getExtraction()->getName()),
+                        );
 
                         if (
                             null === $property->getExtraction()->getDefault() &&
@@ -185,9 +204,13 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
         return $schema;
     }
 
+    /**
+     * @param ReflectionClass<AbstractRequest> $reflectionClass
+     */
     private function describeOperationParameter(
         OA\Operation $operation,
         ApiPropertyExtraction $property,
+        ReflectionClass $reflectionClass,
         string $inType
     ): void {
         $requestStorage = $property->getExtraction()->getRequestStorage();
@@ -196,18 +219,19 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
             $requestStorage = new RequestStorage([]);
         }
 
-        $parameter = Util::getOperationParameter(
-            $operation,
-            $this->getNamingConversion(
-                $requestStorage->getConverter(),
-            )->normalize($property->getExtraction()->getName()),
-            $inType,
-        );
+        $originalPropertyName = $property->getExtraction()->getName();
+        $propertyName = $this->getNamingConversion(
+            $requestStorage->getConverter(),
+        )->normalize($property->getExtraction()->getName());
+        $parameter = Util::getOperationParameter($operation, $propertyName, $inType);
 
         /** @var OA\Schema $schema */
         $schema = Util::getChild($parameter, OA\Schema::class);
 
-        Util::merge($schema, $this->createPropertySchema($property));
+        Util::merge(
+            $schema,
+            $this->createPropertySchema($property, $reflectionClass->getProperty($originalPropertyName)),
+        );
 
         if (RequestStorage::PATH !== $inType) {
             $parameter->required = !$property->getExtraction()->getConfiguration()->isOptional();
@@ -216,9 +240,13 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
         }
     }
 
-    private function createPropertySchema(ApiPropertyExtraction $property): OA\Schema
-    {
-        $propertySchema = new OA\Schema([]);
+    private function createPropertySchema(
+        ApiPropertyExtraction $property,
+        ReflectionProperty $reflectionProperty
+    ): OA\Schema {
+        /** @var OA\Schema|null $schema */
+        $schema = $this->reader->getPropertyAnnotation($reflectionProperty, OA\Schema::class);
+        $propertySchema = $schema ?: new OA\Schema([]);
         $key = $propertySchema->schema . $property->getExtraction()->getName();
 
         if (in_array($key, array_keys($this->cachedProperties))) {

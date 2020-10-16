@@ -49,6 +49,7 @@ class TestRequest extends AbstractRequest
      * @Assert\NotBlank()
      * @LSB\PropConverter(name="foo_bar")
      * @LSB\RequestStorage({LSB\RequestStorage::QUERY})
+     * @OA\Schema(description="Some awesome property")
      */
     public string $foo;
 
@@ -102,5 +103,5 @@ class TestRequest extends AbstractRequest
     {
         return $this->barBaz;
     }
-}
+}   
 ```
