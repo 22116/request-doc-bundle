@@ -25,3 +25,89 @@ return [
     LSBProject\RequestDocBundle\LSBProjectRequestDocBundle::class => ['all' => true],
 ];
 ```
+
+## Examples
+### In class usage
+
+```php
+<?php declare(strict_types=1);
+
+namespace App\DTO;
+
+use App\Entity\TestEntity;
+use App\Service\TestService;
+use LSBProject\RequestBundle\Configuration as LSB;
+use LSBProject\RequestBundle\Request\AbstractRequest;
+use OpenApi\Annotations as OA;
+use Symfony\Component\Validator\Constraints as Assert;
+
+/**
+ * @OA\RequestBody(@OA\MediaType(mediaType="application/json"))
+ */
+class TestRequest extends AbstractRequest
+{
+    /**
+     * @Assert\NotBlank()
+     * @LSB\PropConverter(name="foo_bar")
+     * @LSB\RequestStorage({LSB\RequestStorage::QUERY})
+     */
+    public string $foo;
+
+    /**
+     * @LSB\PropConverter("App\Service\TestService")
+     * @LSB\RequestStorage({LSB\RequestStorage::BODY})
+     */
+    public TestService $service;
+
+    /**
+     * @LSB\RequestStorage({LSB\RequestStorage::QUERY})
+     */
+    public int $testId;
+
+    /**
+     * @Assert\NotBlank()
+     * @LSB\RequestStorage({LSB\RequestStorage::BODY})
+     */
+    private bool $barBaz;
+
+    /**
+     * @LSB\Entity(options={"id": "test_id"})
+     * @LSB\RequestStorage({LSB\RequestStorage::BODY})
+     */
+    public TestEntity $entity;
+
+    /**
+     * @LSB\Entity(expr="repository.find(id)", mapping={"id": "test_id"})
+     * @LSB\RequestStorage({LSB\RequestStorage::BODY})
+     */
+    public TestEntity $entityB;
+
+    /**
+     * @LSB\Entity(options={"mapping": {"bar_baz": "text"}})
+     * @LSB\RequestStorage({LSB\RequestStorage::BODY})
+     */
+    public TestEntity $entityC;
+
+    /**
+     * @LSB\PropConverter(isDto=true)
+     * @LSB\RequestStorage({LSB\RequestStorage::QUERY})
+     */
+    public SubRequest $params;
+
+    public function setBarBaz(bool $flag): void
+    {
+        $this->barBaz = $flag;
+    }
+
+    public function getBarBaz(): bool
+    {
+        return $this->barBaz;
+    }
+}
+```
+
+### Parameter usage
+
+```php
+
+```

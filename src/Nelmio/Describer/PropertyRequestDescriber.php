@@ -8,7 +8,6 @@ use LSBProject\RequestBundle\Configuration\RequestStorage;
 use LSBProject\RequestBundle\Request\AbstractRequest;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
 use LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface;
-use LSBProject\RequestBundle\Util\ReflectionExtractor\DTO\Extraction;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDecorator;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareInterface;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareTrait;
@@ -19,12 +18,12 @@ use Nelmio\ApiDocBundle\PropertyDescriber\PropertyDescriberInterface;
 use OpenApi\Annotations\Schema;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use Symfony\Component\PropertyInfo\Type;
 
 final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRegistryAwareInterface
 {
     use ModelRegistryAwareTrait;
     use RequestPropertyHelperTrait;
+    use DescriberTrait;
 
     private ReflectionExtractorDecorator $extractorDecorator;
     private ContainerInterface $container;
@@ -78,7 +77,8 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
 
             $propertySchema = Util::getProperty($schema, $converter->normalize($property->getExtraction()->getName()));
 
-            if (!$property->getExtraction()->isDefault() &&
+            if (
+                !$property->getExtraction()->isDefault() &&
                 !$property->getExtraction()->getConfiguration()->isOptional()
             ) {
                 if (!is_array($schema->required)) {
@@ -122,20 +122,5 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
                 $target->$key = $value;
             }
         }
-    }
-
-    private function createTypeInfo(Extraction $extraction): Type {
-        $configuration = $extraction->getConfiguration();
-        $baseType = new Type(
-            $configuration->isBuiltInType() ? ($configuration->getType() ?: '') : Type::BUILTIN_TYPE_OBJECT,
-            $configuration->isOptional(),
-            !$configuration->isBuiltInType() ? $configuration->getType() : null
-        );
-
-        if ($configuration->isCollection()) {
-            return new Type(Type::BUILTIN_TYPE_ARRAY, true, null, true, $baseType);
-        }
-
-        return $baseType;
     }
 }
