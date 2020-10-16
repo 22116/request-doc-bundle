@@ -1,0 +1,18 @@
+name: PHP Validate
+on: [push, pull_request]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Set env
+        run: echo ::set-env name=BRANCH::${GITHUB_REF##*/}
+
+      - name: Test build PHP 7.4
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          push: false
+        env:
+          PHP_VERSION: 7.4
