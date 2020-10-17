@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace LSBProject\RequestDocBundle\Nelmio\Describer;
 
-use Doctrine\Common\Annotations\Reader;
 use LSBProject\RequestBundle\Configuration\RequestStorage;
 use LSBProject\RequestBundle\Request\AbstractRequest;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
 use LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface;
+use LSBProject\RequestDocBundle\Nelmio\Describer\Component\PropertyDescriber;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDecorator;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareInterface;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareTrait;
 use Nelmio\ApiDocBundle\Model\Model;
-use Nelmio\ApiDocBundle\ModelDescriber\Annotations\AnnotationsReader;
 use Nelmio\ApiDocBundle\ModelDescriber\ModelDescriberInterface;
 use Nelmio\ApiDocBundle\OpenApiPhp\Util;
-use Nelmio\ApiDocBundle\PropertyDescriber\PropertyDescriberInterface;
 use OpenApi\Annotations\Schema;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -25,31 +23,22 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
 {
     use ModelRegistryAwareTrait;
     use RequestPropertyHelperTrait;
-    use DescriberTrait;
 
     private ReflectionExtractorDecorator $extractorDecorator;
     private ContainerInterface $container;
     private NamingConversionInterface $namingConversion;
-    private Reader $reader;
+    private PropertyDescriber $propertyDescriber;
 
-    /** @var PropertyDescriberInterface[] */
-    private iterable $describers;
-
-    /**
-     * @param PropertyDescriberInterface[] $describers
-     */
     public function __construct(
         ReflectionExtractorDecorator $extractorDecorator,
         ContainerInterface $container,
         NamingConversionInterface $namingConversion,
-        Reader $reader,
-        iterable $describers = []
+        PropertyDescriber $propertyDescriber
     ) {
         $this->extractorDecorator = $extractorDecorator;
         $this->container = $container;
         $this->namingConversion = $namingConversion;
-        $this->reader = $reader;
-        $this->describers = $describers;
+        $this->propertyDescriber = $propertyDescriber;
     }
 
     public function describe(Model $model, Schema $schema): void
@@ -95,29 +84,9 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
                 }
             }
 
-            if ($property->getExtraction()->isDefault()) {
-                $propertySchema->default = $property->getExtraction()->getDefault();
-            }
+            $this->propertyDescriber->setModelRegistry($this->modelRegistry);
 
-            foreach ($this->describers as $describer) {
-                if ($describer instanceof ModelRegistryAwareInterface) {
-                    $describer->setModelRegistry($this->modelRegistry);
-                }
-
-                $types = [$this->createTypeInfo($property->getExtraction())];
-
-                if ($describer->supports($types)) {
-                    $describer->describe($types, $propertySchema);
-
-                    break;
-                }
-            }
-
-            $annotationsReader = new AnnotationsReader($this->reader, $this->modelRegistry, []);
-            $annotationsReader->updateProperty(
-                $reflector->getProperty($property->getExtraction()->getName()),
-                $propertySchema,
-            );
+            Util::merge($propertySchema, $this->propertyDescriber->describe($property));
         }
     }
 

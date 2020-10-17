@@ -110,3 +110,15 @@ class TestRequest extends AbstractRequest
     }
 }
 ```
+
+No need to point the model with annotations in controller. Just inject the class in method parameters.
+
+```php
+    /**
+     * @Route("/123")
+     */
+    public function test(TestRequest $testRequest): Response
+    {
+        return new Response((string)$testRequest->params->subfoo);
+    }
+```

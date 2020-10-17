@@ -13,6 +13,25 @@
             <argument type="service" id="annotations.cached_reader" />
         </service>
         <service
+            id="lsbproject.request_doc.describer.property"
+            class="LSBProject\RequestDocBundle\Nelmio\Describer\Component\PropertyDescriber"
+            public="false"
+        >
+            <argument type="service" id="annotations.cached_reader" />
+            <argument type="tagged_iterator" tag="nelmio_api_doc.object_model.property_describer" />
+        </service>
+        <service
+                id="lsbproject.request_doc.describer.operation"
+                class="LSBProject\RequestDocBundle\Nelmio\Describer\Component\OperationDescriber"
+                public="false"
+        >
+            <argument type="service" id="lsbproject.request_doc.describer.property" />
+            <argument type="service" id="lsbproject.request_doc.reflection_extractor" />
+            <argument type="service" id="service_container" />
+            <argument type="service" id="LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface" />
+            <argument type="service" id="annotations.cached_reader" />
+        </service>
+        <service
                 id="lsbproject.request_doc.request_describer"
                 class="LSBProject\RequestDocBundle\Nelmio\Describer\PropertyRequestDescriber"
                 public="true"
@@ -21,8 +40,7 @@
             <argument type="service" id="lsbproject.request_doc.reflection_extractor" />
             <argument type="service" id="service_container" />
             <argument type="service" id="LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface" />
-            <argument type="service" id="annotations.cached_reader" />
-            <argument type="tagged_iterator" tag="nelmio_api_doc.object_model.property_describer" />
+            <argument type="service" id="lsbproject.request_doc.describer.property" />
         </service>
         <service
                 id="lsbproject.request_doc.route_describer"
@@ -30,11 +48,7 @@
                 public="true"
         >
             <tag name="nelmio_api_doc.route_describer" priority="100" />
-            <argument type="service" id="lsbproject.request_doc.reflection_extractor" />
-            <argument type="service" id="service_container" />
-            <argument type="service" id="LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface" />
-            <argument type="service" id="annotations.cached_reader" />
-            <argument type="tagged_iterator" tag="nelmio_api_doc.object_model.property_describer" />
+            <argument type="service" id="lsbproject.request_doc.describer.operation" />
         </service>
     </services>
 </container>

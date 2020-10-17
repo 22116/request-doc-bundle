@@ -35,7 +35,7 @@ final class ReflectionExtractorDecorator
                 Schema::class,
             );
 
-            return new ApiPropertyExtraction($extraction, $schema);
+            return new ApiPropertyExtraction($extraction, $reflector->getProperty($extraction->getName()), $schema);
         }, $this->reflectionExtractor->extract($reflector, $props));
 
         /** @var Schema|null $schema */
