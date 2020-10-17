@@ -13,6 +13,7 @@ use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ApiPropertyExtraction;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDecorator;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareInterface;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareTrait;
+use Nelmio\ApiDocBundle\ModelDescriber\Annotations\AnnotationsReader;
 use Nelmio\ApiDocBundle\OpenApiPhp\Util;
 use Nelmio\ApiDocBundle\PropertyDescriber\PropertyDescriberInterface;
 use Nelmio\ApiDocBundle\RouteDescriber\RouteDescriberInterface;
@@ -244,9 +245,7 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
         ApiPropertyExtraction $property,
         ReflectionProperty $reflectionProperty
     ): OA\Schema {
-        /** @var OA\Schema|null $schema */
-        $schema = $this->reader->getPropertyAnnotation($reflectionProperty, OA\Schema::class);
-        $propertySchema = $schema ?: new OA\Schema([]);
+        $propertySchema = new OA\Property([]);
         $key = $propertySchema->schema . $property->getExtraction()->getName();
 
         if (in_array($key, array_keys($this->cachedProperties))) {
@@ -271,6 +270,9 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
                 break;
             }
         }
+
+        $annotationsReader = new AnnotationsReader($this->reader, $this->modelRegistry, []);
+        $annotationsReader->updateProperty($reflectionProperty, $propertySchema);
 
         return $propertySchema;
     }

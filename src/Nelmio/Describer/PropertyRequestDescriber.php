@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace LSBProject\RequestDocBundle\Nelmio\Describer;
 
+use Doctrine\Common\Annotations\Reader;
 use LSBProject\RequestBundle\Configuration\RequestStorage;
 use LSBProject\RequestBundle\Request\AbstractRequest;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
@@ -12,6 +13,7 @@ use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDeco
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareInterface;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareTrait;
 use Nelmio\ApiDocBundle\Model\Model;
+use Nelmio\ApiDocBundle\ModelDescriber\Annotations\AnnotationsReader;
 use Nelmio\ApiDocBundle\ModelDescriber\ModelDescriberInterface;
 use Nelmio\ApiDocBundle\OpenApiPhp\Util;
 use Nelmio\ApiDocBundle\PropertyDescriber\PropertyDescriberInterface;
@@ -28,6 +30,7 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
     private ReflectionExtractorDecorator $extractorDecorator;
     private ContainerInterface $container;
     private NamingConversionInterface $namingConversion;
+    private Reader $reader;
 
     /** @var PropertyDescriberInterface[] */
     private iterable $describers;
@@ -39,11 +42,13 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
         ReflectionExtractorDecorator $extractorDecorator,
         ContainerInterface $container,
         NamingConversionInterface $namingConversion,
+        Reader $reader,
         iterable $describers = []
     ) {
         $this->extractorDecorator = $extractorDecorator;
         $this->container = $container;
         $this->namingConversion = $namingConversion;
+        $this->reader = $reader;
         $this->describers = $describers;
     }
 
@@ -107,6 +112,12 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
                     break;
                 }
             }
+
+            $annotationsReader = new AnnotationsReader($this->reader, $this->modelRegistry, []);
+            $annotationsReader->updateProperty(
+                $reflector->getProperty($property->getExtraction()->getName()),
+                $propertySchema,
+            );
         }
     }
 
