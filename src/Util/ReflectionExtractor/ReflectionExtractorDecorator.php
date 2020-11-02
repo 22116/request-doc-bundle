@@ -8,6 +8,7 @@ use Doctrine\Common\Annotations\Reader;
 use LSBProject\RequestBundle\Request\AbstractRequest;
 use LSBProject\RequestBundle\Util\ReflectionExtractor\DTO\Extraction;
 use LSBProject\RequestBundle\Util\ReflectionExtractor\ReflectionExtractorInterface;
+use OpenApi\Annotations\Property;
 use OpenApi\Annotations\Schema;
 use ReflectionClass;
 
@@ -29,10 +30,10 @@ final class ReflectionExtractorDecorator
     public function extract(ReflectionClass $reflector, array $props = []): ApiExtraction
     {
         $extractions = array_map(function (Extraction $extraction) use ($reflector) {
-            /** @var Schema|null $schema */
+            /** @var Property|null $schema */
             $schema = $this->reader->getPropertyAnnotation(
                 $reflector->getProperty($extraction->getName()),
-                Schema::class,
+                Property::class,
             );
 
             return new ApiPropertyExtraction($extraction, $reflector->getProperty($extraction->getName()), $schema);

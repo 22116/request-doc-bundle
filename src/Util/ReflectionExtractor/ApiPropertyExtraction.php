@@ -5,16 +5,16 @@ declare(strict_types=1);
 namespace LSBProject\RequestDocBundle\Util\ReflectionExtractor;
 
 use LSBProject\RequestBundle\Util\ReflectionExtractor\DTO\Extraction;
-use OpenApi\Annotations\Schema;
+use OpenApi\Annotations\Property;
 use ReflectionProperty;
 
 final class ApiPropertyExtraction
 {
     private ReflectionProperty $reflector;
     private Extraction $extraction;
-    private ?Schema $schema;
+    private ?Property $schema;
 
-    public function __construct(Extraction $extraction, ReflectionProperty $reflector, ?Schema $schema = null)
+    public function __construct(Extraction $extraction, ReflectionProperty $reflector, ?Property $schema = null)
     {
         $this->extraction = $extraction;
         $this->reflector = $reflector;
@@ -31,12 +31,12 @@ final class ApiPropertyExtraction
         $this->extraction = $extraction;
     }
 
-    public function getSchema(): ?Schema
+    public function getSchema(): ?Property
     {
         return $this->schema;
     }
 
-    public function setSchema(?Schema $schema): void
+    public function setSchema(?Property $schema): void
     {
         $this->schema = $schema;
     }

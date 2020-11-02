@@ -85,6 +85,7 @@ class OperationDescriber implements ModelRegistryAwareInterface
                 $propertyName = $this->getNamingConversion($requestStorage->getConverter())->normalize(
                     $property->getExtraction()->getName(),
                 );
+                $this->propertyDescriber->setModelRegistry($this->modelRegistry);
                 $bodyProperties[$propertyName] = $this->propertyDescriber->describe($property);
 
                 if (
@@ -144,6 +145,13 @@ class OperationDescriber implements ModelRegistryAwareInterface
         $propertyName = $this->getNamingConversion(
             $requestStorage->getConverter(),
         )->normalize($property->getExtraction()->getName());
+        $propertySchema = $property->getSchema();
+
+        if ($propertySchema && UNDEFINED !== $propertySchema->property) {
+            $propertyName = $propertySchema->property;
+            $propertySchema->property = UNDEFINED;
+        }
+
         $parameter = Util::getOperationParameter($operation, $propertyName, $inType);
 
         /** @var OA\Schema $schema */

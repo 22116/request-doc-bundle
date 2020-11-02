@@ -14,6 +14,8 @@ use Nelmio\ApiDocBundle\PropertyDescriber\PropertyDescriberInterface;
 use OpenApi\Annotations as OA;
 use Symfony\Component\PropertyInfo\Type;
 
+use const OpenApi\UNDEFINED;
+
 class PropertyDescriber implements ModelRegistryAwareInterface
 {
     use ModelRegistryAwareTrait;
@@ -23,7 +25,7 @@ class PropertyDescriber implements ModelRegistryAwareInterface
     /** @var PropertyDescriberInterface[] */
     private iterable $describers;
 
-    /** @var array<string, OA\Schema> */
+    /** @var array<string, OA\Property> */
     public static array $cachedProperties = [];
 
     /**
@@ -35,13 +37,13 @@ class PropertyDescriber implements ModelRegistryAwareInterface
         $this->describers = $describers;
     }
 
-    public function describe(ApiPropertyExtraction $property): OA\Schema
+    public function describe(ApiPropertyExtraction $property): OA\Property
     {
         $propertySchema = new OA\Property([]);
         $key = $property->getReflector()->getDeclaringClass()->getName()
             . '::' . $property->getExtraction()->getName();
 
-        if (in_array($key, array_keys(self::$cachedProperties))) {
+        if (array_key_exists($key, self::$cachedProperties)) {
             return self::$cachedProperties[$key];
         }
 
@@ -49,23 +51,29 @@ class PropertyDescriber implements ModelRegistryAwareInterface
             $propertySchema->default = $property->getExtraction()->getDefault();
         }
 
+        $annotationsReader = new AnnotationsReader($this->reader, $this->modelRegistry, []);
+        $annotationsReader->updateProperty($property->getReflector(), $propertySchema);
+
+        $type = $this->createTypeInfo($property->getExtraction());
+
+        if (UNDEFINED !== $propertySchema->type && $type->getClassName()) {
+            self::$cachedProperties[$key] = $propertySchema;
+
+            return $propertySchema;
+        }
+
         foreach ($this->describers as $describer) {
             if ($describer instanceof ModelRegistryAwareInterface) {
                 $describer->setModelRegistry($this->modelRegistry);
             }
 
-            $types = [$this->createTypeInfo($property->getExtraction())];
-
-            if ($describer->supports($types)) {
-                $describer->describe($types, $propertySchema);
+            if ($describer->supports([$type])) {
+                $describer->describe([$type], $propertySchema);
                 self::$cachedProperties[$key] = $propertySchema;
 
                 break;
             }
         }
-
-        $annotationsReader = new AnnotationsReader($this->reader, $this->modelRegistry, []);
-        $annotationsReader->updateProperty($property->getReflector(), $propertySchema);
 
         return $propertySchema;
     }
