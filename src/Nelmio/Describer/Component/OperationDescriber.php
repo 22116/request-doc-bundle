@@ -6,7 +6,7 @@ namespace LSBProject\RequestDocBundle\Nelmio\Describer\Component;
 
 use Doctrine\Common\Annotations\Reader;
 use LSBProject\RequestBundle\Configuration\RequestStorage;
-use LSBProject\RequestBundle\Request\AbstractRequest;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
 use LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ApiPropertyExtraction;
@@ -49,7 +49,7 @@ class OperationDescriber implements ModelRegistryAwareInterface
     }
 
     /**
-     * @param ReflectionClass<AbstractRequest> $classReflector
+     * @param ReflectionClass<RequestInterface> $classReflector
      */
     public function describeRequest(OA\Operation $operation, ReflectionClass $classReflector): void
     {

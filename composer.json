@@ -12,7 +12,7 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=7.4",
-        "lsbproject/request-bundle": "^5",
+        "lsbproject/request-bundle": "^6.0",
         "nelmio/api-doc-bundle": "^v4"
     },
     "require-dev": {

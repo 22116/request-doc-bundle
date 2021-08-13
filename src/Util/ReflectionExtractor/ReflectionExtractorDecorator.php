@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LSBProject\RequestDocBundle\Util\ReflectionExtractor;
 
 use Doctrine\Common\Annotations\Reader;
-use LSBProject\RequestBundle\Request\AbstractRequest;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Util\ReflectionExtractor\DTO\Extraction;
 use LSBProject\RequestBundle\Util\ReflectionExtractor\ReflectionExtractorInterface;
 use OpenApi\Annotations\Property;
@@ -24,7 +24,7 @@ final class ReflectionExtractorDecorator
     }
 
     /**
-     * @param ReflectionClass<AbstractRequest> $reflector
+     * @param ReflectionClass<RequestInterface> $reflector
      * @param string[] $props
      */
     public function extract(ReflectionClass $reflector, array $props = []): ApiExtraction

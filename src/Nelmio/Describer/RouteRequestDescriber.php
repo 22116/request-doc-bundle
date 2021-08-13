@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace LSBProject\RequestDocBundle\Nelmio\Describer;
 
-use LSBProject\RequestBundle\Request\AbstractRequest;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestDocBundle\Nelmio\Describer\Component\OperationDescriber;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareInterface;
 use Nelmio\ApiDocBundle\Describer\ModelRegistryAwareTrait;
@@ -41,7 +41,7 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
             $operation->operationId = $operation->method . ucfirst($reflectionMethod->getName());
 
             foreach ($requests as $request) {
-                /** @var ReflectionClass<AbstractRequest> $requestReflector */
+                /** @var ReflectionClass<RequestInterface> $requestReflector */
                 $requestReflector = $request->getClass();
 
                 $this->describer->setModelRegistry($this->modelRegistry);
@@ -60,7 +60,7 @@ final class RouteRequestDescriber implements RouteDescriberInterface, ModelRegis
         foreach ($reflectionMethod->getParameters() as $parameter) {
             $type = $parameter->getType();
 
-            if ($type instanceof ReflectionNamedType && is_a($type->getName(), AbstractRequest::class, true)) {
+            if ($type instanceof ReflectionNamedType && is_a($type->getName(), RequestInterface::class, true)) {
                 $requests[] = $parameter;
             }
         }

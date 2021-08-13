@@ -36,14 +36,14 @@ namespace App\DTO;
 use App\Entity\TestEntity;
 use App\Service\TestService;
 use LSBProject\RequestBundle\Configuration as LSB;
-use LSBProject\RequestBundle\Request\AbstractRequest;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use OpenApi\Annotations as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @OA\RequestBody(@OA\MediaType(mediaType="application/json"))
  */
-class TestRequest extends AbstractRequest
+class TestRequest implements RequestInterface
 {
     /**
      * @Assert\NotBlank()

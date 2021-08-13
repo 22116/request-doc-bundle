@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace LSBProject\RequestDocBundle\Nelmio\Describer;
 
 use LSBProject\RequestBundle\Configuration\RequestStorage;
-use LSBProject\RequestBundle\Request\AbstractRequest;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
 use LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface;
 use LSBProject\RequestDocBundle\Nelmio\Describer\Component\PropertyDescriber;
@@ -43,7 +43,7 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
 
     public function describe(Model $model, Schema $schema): void
     {
-        /** @var class-string<AbstractRequest> $className */
+        /** @var class-string<RequestInterface> $className */
         $className = $model->getType()->getClassName() ?: '';
         $reflector = new ReflectionClass($className);
         $extraction = $this->extractorDecorator->extract($reflector, $this->filterProps($reflector));
@@ -92,7 +92,7 @@ final class PropertyRequestDescriber implements ModelDescriberInterface, ModelRe
 
     public function supports(Model $model): bool
     {
-        return is_a($model->getType()->getClassName() ?: '', AbstractRequest::class, true);
+        return is_a($model->getType()->getClassName() ?: '', RequestInterface::class, true);
     }
 
     private function importSchema(Schema $source, Schema $target, bool $ignoreEmpty = false): void
