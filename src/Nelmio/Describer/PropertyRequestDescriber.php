@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace LSBProject\RequestDocBundle\Nelmio\Describer;
 
 use LSBProject\RequestBundle\Configuration\RequestStorage;
-use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface;
 use LSBProject\RequestDocBundle\Nelmio\Describer\Component\PropertyDescriber;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDecorator;

@@ -21,5 +21,6 @@ RUN composer install
 COPY . /var/www/bundle
 
 RUN composer install
+RUN composer require lsbproject/php-clean-code-rules --dev
 RUN composer phpcs
 RUN composer phpstan

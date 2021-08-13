@@ -6,8 +6,8 @@ namespace LSBProject\RequestDocBundle\Nelmio\Describer\Component;
 
 use Doctrine\Common\Annotations\Reader;
 use LSBProject\RequestBundle\Configuration\RequestStorage;
-use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Request\Factory\RequestPropertyHelperTrait;
+use LSBProject\RequestBundle\Request\RequestInterface;
 use LSBProject\RequestBundle\Util\NamingConversion\NamingConversionInterface;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ApiPropertyExtraction;
 use LSBProject\RequestDocBundle\Util\ReflectionExtractor\ReflectionExtractorDecorator;

@@ -12,12 +12,11 @@
     "minimum-stability": "stable",
     "require": {
         "php": ">=7.4",
-        "lsbproject/request-bundle": "^6.0",
+        "lsbproject/request-bundle": "^6",
         "nelmio/api-doc-bundle": "^v4"
     },
     "require-dev": {
-        "roave/security-advisories": "dev-latest",
-        "lsbproject/php-clean-code-rules": "^v1.1.0 | ^v2.0.0"
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {
